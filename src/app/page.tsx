@@ -6,6 +6,8 @@ import Link from "next/link";
 interface ProductItem {
     product_id: number;
     product_name: string;
+    product_category: string;
+    last_modified: string;
 }
 
 export default function Home() {
@@ -26,7 +28,6 @@ export default function Home() {
                 return response.json();
             })
             .then((responseData: ProductItem[]) => {
-                console.log(responseData);
                 setData(responseData.map((item) => ({...item, checked: false})));
             })
             .catch((err) => {
@@ -61,8 +62,16 @@ export default function Home() {
                         <Link key={item.product_id} href={`/product/${item.product_id}`} passHref>
                             <div
                                 key={item.product_id}
-                                className="bg-white border border-gray-200 rounded-md shadow-md h-32"
-                            >{capitalizeName(item.product_name)}</div>
+                                className="bg-white border border-gray-200 rounded-md shadow-md p-2"
+                            >
+                                <img src="https://picsum.photos/160/160" className="w-full"/>
+                                <div className="mt-2">
+                                    <p className="text-sm"><b>Nome:</b> {capitalizeName(item.product_name)}</p>
+                                    <p className="text-sm"><b>Categoria:</b> {capitalizeName(item.product_category)}</p>
+                                    <p className="text-sm"><b>Última atualização:</b> {capitalizeName(item.last_modified)}</p>
+                                </div>
+
+                            </div>
                         </Link>
                     ))}
                 </div>

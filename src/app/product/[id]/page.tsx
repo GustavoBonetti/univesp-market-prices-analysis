@@ -10,14 +10,21 @@ interface DatasetItem {
     data: number[];
 }
 
-interface ProductPriceItem {
+interface ProductPricesItem {
     name: string;
-    price: number[];
+    prices: number[];
+    last_price: number;
+    updated_at: string;
+    max_price_month: number
+    min_price_month: number
+    max_price_annual: number
+    min_price_annual: number
 }
 
 export default function ItemDetailsPage() {
     const params = useParams<{ id: string }>();
     const productId = params ? params.id : null;
+    const [productInfo, setProductInfo] = useState<ProductPricesItem>();
     const [chartDataValues, setChartDataValues] = useState<DatasetItem[]>([]);
     const [error, setError] = useState<string | null>(null);
 
@@ -49,15 +56,17 @@ export default function ItemDetailsPage() {
                 }
                 return response.json();
             })
-            .then((responseData: ProductPriceItem[]) => {
+            .then((responseData: ProductPricesItem[]) => {
                 setChartDataValues(responseData.map((item) => {
                     return {
                         label: item.name,
-                        data: item.price,
+                        data: item.prices,
                         backgroundColor: randomRgba(),
                         borderColor: randomRgba()
                     };
                 }));
+
+                setProductInfo(responseData.at(0));
             })
             .catch((err) => {
                 console.error('Error fetching data:', err);
@@ -101,8 +110,11 @@ export default function ItemDetailsPage() {
                             <div className="font-bold">PRODUTO</div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-md shadow-md p-6 flex items-center justify-center h-48">
-                        <div className="text-center">
+                    <div className="bg-white rounded-md shadow-md p-6 items-center justify-center h-48">
+                        <label htmlFor="descricao" className="block text-gray-700 text-sm font-bold mb-2 text-center">
+                            Variação últimos 7 dias:
+                        </label>
+                        <div className="text-center w-full">
                             <MyChart chartData={chartData}/>
                         </div>
                     </div>
@@ -116,17 +128,18 @@ export default function ItemDetailsPage() {
                             Descrição:
                         </label>
                         <div className="border-b border-gray-300 py-2">
-                            {/* Aqui você pode adicionar o conteúdo da descrição */}
+                            {productInfo?.name}
                         </div>
                     </div>
 
                     <div>
                         <h3 className="text-lg font-bold mb-2">ESTATÍSTICAS</h3>
-                        <p>Preço mais recente: R$ ______</p>
-                        <p>Menor preço (mês): R$ ______</p>
-                        <p>Menor preço (ano): R$ ______</p>
-                        <p>Maior preço (mês): R$ ______</p>
-                        <p>Maior preço (ano): R$ ______</p>
+                        <p>Preço mais recente: R$ {productInfo?.last_price}</p>
+                        <p>Menor preço (mês): R$ {productInfo?.min_price_month}</p>
+                        <p>Menor preço (ano): R$ {productInfo?.min_price_annual}</p>
+                        <p>Maior preço (mês): R$ {productInfo?.max_price_month}</p>
+                        <p>Maior preço (ano): R$ {productInfo?.max_price_annual}</p>
+                        <p>Atualizado em: {productInfo?.updated_at}</p>
                     </div>
                 </div>
             </main>

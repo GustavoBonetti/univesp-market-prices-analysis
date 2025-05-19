@@ -10,6 +10,7 @@ export async function GET() {
         const rows = db.prepare('SELECT MP.market_product_id as "product_id", ' +
             'MP.market_product_product_name as "product_name",\n' +
             'P.product_name                 as "product_category",\n' +
+            'MP.market_product_product_image as "product_image",\n' +
             'DATETIME(MAX(PH."timestamp"))  as "last_modified"\n' +
             'FROM market_products mp\n' +
             'JOIN price_history PH ON PH.market_product_id = MP.market_product_id\n' +

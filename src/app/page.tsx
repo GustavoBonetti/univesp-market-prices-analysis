@@ -7,6 +7,7 @@ interface ProductItem {
     product_id: number;
     product_name: string;
     product_category: string;
+    product_image: string;
     last_modified: string;
 }
 
@@ -64,7 +65,7 @@ export default function Home() {
                                 key={item.product_id}
                                 className="bg-white border border-gray-200 rounded-md shadow-md p-2"
                             >
-                                <img src="https://picsum.photos/160/160" className="w-full"/>
+                                <img src={"products_images/" + (item.product_image ? item.product_image : 'empty.jpeg')} className="w-full"/>
                                 <div className="mt-2">
                                     <p className="text-sm"><b>Nome:</b> {capitalizeName(item.product_name)}</p>
                                     <p className="text-sm"><b>Categoria:</b> {capitalizeName(item.product_category)}</p>

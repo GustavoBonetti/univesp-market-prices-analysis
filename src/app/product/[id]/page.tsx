@@ -12,7 +12,9 @@ interface DatasetItem {
 
 interface ProductPricesItem {
     name: string;
+    image: string;
     prices: number[];
+    timestamps: string[];
     last_price: number;
     updated_at: string;
     max_price_month: number
@@ -26,20 +28,11 @@ export default function ItemDetailsPage() {
     const productId = params ? params.id : null;
     const [productInfo, setProductInfo] = useState<ProductPricesItem>();
     const [chartDataValues, setChartDataValues] = useState<DatasetItem[]>([]);
+    const [chartDataLabels, setChartDataLabels] = useState<string[] | undefined>([]);
     const [error, setError] = useState<string | null>(null);
 
-    const range = (start: number, end: number): number[] => {
-        const result: number[] = [];
-
-        for (let a = start; a <= end; a++) {
-            result.push(a);
-        }
-
-        return result;
-    };
-
     const chartData = {
-        labels: range(1, 7),
+        labels: chartDataLabels,
         datasets: chartDataValues,
     };
 
@@ -66,6 +59,8 @@ export default function ItemDetailsPage() {
                     };
                 }));
 
+                setChartDataLabels(responseData.at(0)?.timestamps);
+
                 setProductInfo(responseData.at(0));
             })
             .catch((err) => {
@@ -86,33 +81,51 @@ export default function ItemDetailsPage() {
                 <Link href="/" className="text-blue-500 hover:underline">
                     Voltar para a página inicial
                 </Link>
-                <div className="font-bold text-xl">LOGO DA EMPRESA</div>
+                <div className="font-bold text-xl">PROJETO INTEGRADOR UNIVESP</div>
                 <div className="flex items-center">
-                    <input
-                        type="text"
-                        placeholder="Pesquisar..."
-                        className="border border-gray-300 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r-md">
-                        Pesquisar
-                    </button>
                 </div>
             </header>
 
             {/* Main Content */}
-            <main className="flex flex-col md:flex-row gap-6">
-                {/* Left Side */}
-                <div className="md:w-1/3 flex flex-col gap-6">
-                    <div className="bg-white rounded-md shadow-md p-6 flex items-center justify-center h-48">
-                        <div className="text-center">
-                            <div className="font-bold mb-2">FOTO</div>
-                            <div className="font-bold">DO</div>
-                            <div className="font-bold">PRODUTO</div>
+            <main className="flex flex-col gap-6">
+                <div className="flex flex-col md:flex-row gap-6">
+                    {/* Left Side */}
+                    <div className="md:w-1/3 flex flex-col gap-6">
+                        <div className="bg-white rounded-md shadow-md p-6 flex items-center justify-center">
+                            <div className="text-center">
+                                <img src={"/products_images/" + (productInfo?.image ? productInfo.image : 'empty.jpeg')}/>
+                            </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-md shadow-md p-6 items-center justify-center h-48">
+
+                    {/* Right Side */}
+                    <div className="md:w-2/3 bg-white rounded-md shadow-md p-6 flex flex-col justify-start">
+                        <h2 className="text-xl font-bold mb-4">INFORMAÇÕES DO PRODUTO</h2>
+                        <div className="mb-4">
+                            <label htmlFor="descricao" className="block text-gray-700 text-sm font-bold mb-2">
+                                Descrição:
+                            </label>
+                            <div className="border-b border-gray-300 py-2">
+                                {productInfo?.name}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="text-lg font-bold mb-2">ESTATÍSTICAS</h3>
+                            <p>Preço mais recente: R$ {productInfo?.last_price}</p>
+                            <p>Menor preço (mês): R$ {productInfo?.min_price_month}</p>
+                            <p>Menor preço (ano): R$ {productInfo?.min_price_annual}</p>
+                            <p>Maior preço (mês): R$ {productInfo?.max_price_month}</p>
+                            <p>Maior preço (ano): R$ {productInfo?.max_price_annual}</p>
+                            <p>Atualizado em: {productInfo?.updated_at}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="md:w-full flex flex-col gap-6">
+                    <div className="bg-white rounded-md shadow-md p-6 items-center justify-center">
                         <label htmlFor="descricao" className="block text-gray-700 text-sm font-bold mb-2 text-center">
-                            Variação últimos 7 dias:
+                            Variações de preços:
                         </label>
                         <div className="text-center w-full">
                             <MyChart chartData={chartData}/>
@@ -120,28 +133,7 @@ export default function ItemDetailsPage() {
                     </div>
                 </div>
 
-                {/* Right Side */}
-                <div className="md:w-2/3 bg-white rounded-md shadow-md p-6 flex flex-col justify-start">
-                    <h2 className="text-xl font-bold mb-4">INFORMAÇÕES DO PRODUTO</h2>
-                    <div className="mb-4">
-                        <label htmlFor="descricao" className="block text-gray-700 text-sm font-bold mb-2">
-                            Descrição:
-                        </label>
-                        <div className="border-b border-gray-300 py-2">
-                            {productInfo?.name}
-                        </div>
-                    </div>
 
-                    <div>
-                        <h3 className="text-lg font-bold mb-2">ESTATÍSTICAS</h3>
-                        <p>Preço mais recente: R$ {productInfo?.last_price}</p>
-                        <p>Menor preço (mês): R$ {productInfo?.min_price_month}</p>
-                        <p>Menor preço (ano): R$ {productInfo?.min_price_annual}</p>
-                        <p>Maior preço (mês): R$ {productInfo?.max_price_month}</p>
-                        <p>Maior preço (ano): R$ {productInfo?.max_price_annual}</p>
-                        <p>Atualizado em: {productInfo?.updated_at}</p>
-                    </div>
-                </div>
             </main>
         </div>
     );

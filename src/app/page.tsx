@@ -44,16 +44,16 @@ export default function Home() {
     return (
         <div className="flex flex-col min-h-screen p-5 bg-gray-100">
             <header className="flex justify-between items-center mb-5 py-2">
-                <div className="font-bold text-xl">LOGO DA EMPRESA</div>
+                <div className="font-bold text-xl">PROJETO INTEGRADOR UNIVESP</div>
                 <div className="flex">
-                    <input
-                        type="text"
-                        placeholder="Pesquisar..."
-                        className="border border-gray-300 rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r-md">
-                        Pesquisar
-                    </button>
+                    {/*<input*/}
+                    {/*    type="text"*/}
+                    {/*    placeholder="Pesquisar..."*/}
+                    {/*    className="border border-gray-300 rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"*/}
+                    {/*/>*/}
+                    {/*<button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r-md">*/}
+                    {/*    Pesquisar*/}
+                    {/*</button>*/}
                 </div>
             </header>
 

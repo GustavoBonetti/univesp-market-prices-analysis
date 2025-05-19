@@ -5,7 +5,9 @@ import {NextRequest, NextResponse} from "next/server";
 
 interface ProductPriceItem {
     name: string;
+    image: string;
     prices: number[];
+    timestamps: string[];
     last_price: number;
     updated_at: string;
     max_price_month: number
@@ -17,7 +19,9 @@ interface ProductPriceItem {
 interface ResultQueryPriceHistory {
     id: number,
     name: string,
+    image: string,
     prices: string,
+    timestamps: string,
     last_price: number
     updated_at: string
 }
@@ -40,10 +44,12 @@ export async function GET(request: NextRequest) {
 
     try {
         const priceHistoryStmt = db.prepare('SELECT MP.market_product_id           AS id,\n' +
-            'MP.market_product_product_name AS name,\n' +
-            'GROUP_CONCAT(price)            AS prices,\n' +
-            'PH.price                       AS last_price,\n' +
-            'DATETIME(PH.timestamp)         AS updated_at\n' +
+            'MP.market_product_product_name  AS name,\n' +
+            'MP.market_product_product_image AS image,\n' +
+            'GROUP_CONCAT(price)             AS prices,\n' +
+            'GROUP_CONCAT(timestamp)         AS timestamps,\n' +
+            'PH.price                        AS last_price,\n' +
+            'DATETIME(PH.timestamp)          AS updated_at\n' +
             'FROM price_history PH JOIN market_products MP ON MP.market_product_id = PH.market_product_id\n' +
             'WHERE MP.market_product_id = ?\n' +
             'GROUP BY MP.market_product_id\n' +
@@ -68,9 +74,38 @@ export async function GET(request: NextRequest) {
         const priceMonthResult: ResultQueryPriceMonth = pricesMonth as ResultQueryPriceMonth;
         const priceAnnualResult: ResultQueryPriceAnnual = pricesAnnual as ResultQueryPriceAnnual;
 
+        let actualPrice = 0;
+        const pricesIndex: number[] = [];
+        const prices: number[] = [];
+        const labels: string[] = [];
+        priceHistoryResult.prices.split(',').forEach((price, index) => {
+            const priceValue = parseFloat(price);
+
+            if (priceValue != actualPrice && pricesIndex.length < 10) {
+                pricesIndex.push(index);
+                actualPrice = priceValue;
+            }
+        });
+
+        pricesIndex.forEach(index => {
+            const price = priceHistoryResult.prices.split(',').at(index);
+            const timestamp = priceHistoryResult.timestamps.split(',').at(index)
+
+            if (typeof price === 'string') {
+                prices.push(parseFloat(price));
+            }
+
+            if (typeof timestamp === 'string') {
+                labels.push(timestamp.substring(0, timestamp.lastIndexOf('.')));
+            }
+
+        })
+
         products.push({
             name: priceHistoryResult.name,
-            prices: priceHistoryResult.prices.split(',').map(parseFloat),
+            image: priceHistoryResult.image,
+            timestamps: labels,
+            prices: prices,
             last_price: priceHistoryResult.last_price,
             updated_at: priceHistoryResult.updated_at,
             max_price_month: priceMonthResult.max_price,

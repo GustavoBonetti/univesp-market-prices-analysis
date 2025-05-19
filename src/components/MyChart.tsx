@@ -8,11 +8,13 @@ import {
     ChartOptions, LinearScale,
     LineController,
     LineElement,
-    PointElement
+    PointElement,
+    Tooltip,
+    Title
 } from 'chart.js';
 import React from "react";
 
-ChartJS.register(CategoryScale, LinearScale, LineController, LineElement, PointElement);
+ChartJS.register(CategoryScale, LinearScale, LineController, LineElement, PointElement, Title, Tooltip);
 
 interface MyChartProps {
     chartData: ChartData<'line'>;
@@ -22,15 +24,6 @@ interface MyChartProps {
 const MyChart: React.FC<MyChartProps> = ({chartData, options}) => {
     const defaultOptions: ChartOptions<'line'> = {
         responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Chart.js Line Chart',
-            },
-        },
     };
 
     const combinedOptions: ChartOptions<'line'> = {

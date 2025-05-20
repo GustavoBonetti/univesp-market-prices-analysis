@@ -76,8 +76,8 @@ export async function GET(request: NextRequest) {
 
         let actualPrice = 0;
         const pricesIndex: number[] = [];
-        const prices: number[] = [];
-        const labels: string[] = [];
+        let prices: number[] = [];
+        let labels: string[] = [];
         priceHistoryResult.prices.split(',').forEach((price, index) => {
             const priceValue = parseFloat(price);
 
@@ -98,8 +98,19 @@ export async function GET(request: NextRequest) {
             if (typeof timestamp === 'string') {
                 labels.push(timestamp.substring(0, timestamp.lastIndexOf('.')));
             }
+        });
 
-        })
+        if (labels.length <= 1) {
+            labels = priceHistoryResult.timestamps.split(',').map(
+                timestamp => {
+                    return timestamp.substring(0, timestamp.lastIndexOf('.'));
+                }
+            ).slice(-10)
+        }
+
+        if (prices.length <= 1) {
+            prices = priceHistoryResult.prices.split(',').map(parseFloat).slice(-10);
+        }
 
         products.push({
             name: priceHistoryResult.name,
